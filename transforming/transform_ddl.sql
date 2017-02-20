@@ -16,12 +16,12 @@ CREATE TABLE T_MEDL_MEAS
 AS
 SELECT DISTINCT
 MEDL_MEAS_ID,
-MEDL_COND_DESC,
+MEDL_MEAS_DESC , 
 MEAS_STRT_DT,
-MEAS_END_DT,
+MEAS_END_DT ,
 current_date AS CRT_DT,
 current_date AS UPD_DT
-FROM T_EFFCTV_CARE_RAW
+FROM  T_MEDL_MEAS_RAW
 ;
 
 DROP TABLE T_HOSP_TYPE;
@@ -73,24 +73,12 @@ h.hosp_phn_num,
 h.hosp_typ_desc,
 h.hosp_ownrshp_desc,
 h.emgc_svc_ind,
-avg(s.base_score) as AVG_BASE_SCORE,
-avg(s.const_score) as AVG_CONS_SCORE,
+s.base_score,
+s.const_score,
 current_date as CRT_DT,
 current_date as UPD_DT
 FROM t_hosp_raw h, t_hosp_srvy_meas_score_raw s
 where h.provr_id = s.provr_id
-group by
-h.provr_id,
-h.hosp_nm,
-h.hosp_str_addr,
-h.hosp_city_nm,
-h.hosp_st_cd,
-h.hosp_pstl_cd,
-h.hosp_cnty_nm,
-h.hosp_phn_num,
-h.hosp_typ_desc,
-h.hosp_ownrshp_desc,
-h.emgc_svc_ind
 ;
 
 DROP TABLE T_HOSP_MEDL_MEAS_SCORE;
@@ -100,7 +88,7 @@ AS
 SELECT DISTINCT
 PROVR_ID,
 MEDL_MEAS_ID,
-MEDL_COND_DESC,
+MEDL_MEAS_DESC,
 RAW_SCORE,
 SAMPL_SIZE,
 current_date as CRT_DT,
@@ -110,7 +98,7 @@ UNION ALL
 SELECT DISTINCT
 R.PROVR_ID,
 R.MEDL_MEAS_ID,
-M.MEDL_COND_DESC,
+M.MEDL_MEAS_DESC,
 R.RAW_SCORE,
 'Not Available' as SAMPL_SIZE,
 current_date as CRT_DT,
@@ -228,15 +216,15 @@ CURRENT_DATE AS UPD_DT
 FROM T_HOSP_SRVY_MEAS_SCORE_RAW
 ;
 
-CREATE VIEW V_MEDL_MEAS_VAR
+CREATE OR REPLACE VIEW V_MEDL_MEAS_VAR
 AS
 SELECT 
 MEDL_MEAS_ID, 
-MEDL_COND_DESC,
 AVG(RAW_SCORE) AS AVG_SCORE,
 STDDEV_POP(RAW_SCORE) AS STDEV_SCORE
 FROM T_HOSP_MEDL_MEAS_SCORE
 GROUP BY
-MEDL_MEAS_ID,
-MEDL_COND_DESC
+MEDL_MEAS_ID
 ;
+
+

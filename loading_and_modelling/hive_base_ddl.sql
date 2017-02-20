@@ -147,4 +147,4 @@ WITH SERDEPROPERTIES (
 "quoteChar" = '"', 
 "escapeChar" = '\\' ) 
 STORED AS TEXTFILE 
-LOCATION '/user/w205/hospital_compare/rating_hospital';
+LOCATION '/user/w205/hospital_compare/survey_h';
