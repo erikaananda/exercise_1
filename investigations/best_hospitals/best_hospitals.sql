@@ -1,6 +1,12 @@
 # Devise a SQL query that finds the 10 hospitals with the highest quality of care, 
 # along with their aggregate and average quality scores, as well as variability in scores.
 
+# find a list of measures that don't conform to the 0-100 scale for filtering
+select MEDL_MEAS_ID, max(cast(raw_score as float))
+from T_HOSP_MEDL_MEAS_SCORE
+GROUP BY MEDL_MEAS_ID
+HAVING max(cast(raw_score as float)) > 100 ;
+
 
 #spark SQL
 # get the best TIMELY AND EFFECTIVE CARE, using standard deviation for each score
@@ -14,9 +20,9 @@ count(M.RAW_SCORE) as COUNT_SCORE,
 round(AVG((cast(M.RAW_SCORE as float) - VM.AVG_SCORE) / VM.STDEV_SCORE), 2) as AVG_SD_SCORE
 FROM T_HOSP H, T_HOSP_MEDL_MEAS_SCORE M, V_MEDL_MEAS_VAR VM
 WHERE H.PROVR_ID = M.PROVR_ID
-AND M.RAW_Score  <> 'Not Available'
 AND M.MEDL_MEAS_ID = VM.MEDL_MEAS_ID
-and M.MEDL_MEAS_ID NOT IN ("EDV", "MV", "ED_1b", "ED_2b", "OP_18b")
+AND M.RAW_Score  <> 'Not Available'
+and M.MEDL_MEAS_ID NOT IN ("ED_2b", "OP_18b", "OP_20", "OP_21", "OP_5", "OP_3b", "ED_1b")
 and substring(M.MEDL_MEAS_ID,1, 4) NOT IN ("MORT", "READ")
 GROUP BY H.PROVR_ID, H.HOSP_NM, H.HOSP_ST_CD, H.BASE_SCORE, H.CONST_SCORE
 HAVING COUNT_SCORE > 25
